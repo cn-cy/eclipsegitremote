@@ -3,7 +3,11 @@ package com.aop;
 import java.lang.reflect.Method;
 
 import org.springframework.aop.AfterReturningAdvice;
+<<<<<<< HEAD
 //123456
+=======
+//12345
+>>>>>>> branch 'master' of https://github.com/cn-cy/eclipsegitremote.git
 //abcd
 public class LogAfter implements AfterReturningAdvice {
 
