@@ -3,7 +3,7 @@ package com.aop;
 import java.lang.reflect.Method;
 
 import org.springframework.aop.AfterReturningAdvice;
-//123456789
+//12345
 //abcd
 public class LogAfter implements AfterReturningAdvice {
 
