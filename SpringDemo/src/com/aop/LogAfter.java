@@ -4,12 +4,13 @@ import java.lang.reflect.Method;
 
 import org.springframework.aop.AfterReturningAdvice;
 //123456789
+//abcd
 public class LogAfter implements AfterReturningAdvice {
 
 	@Override
 	public void afterReturning(Object returnValue, Method method, Object[] args, Object target) throws Throwable {
 		// TODO Auto-generated method stub
-		System.out.println("后置通知-----");
+		System.out.println("潞贸脰脙脥篓脰陋-----");
 	}
 
 }
