@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+
+	xmlns:tx="http://www.springframework.org/schema/tx"
+
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	 http://www.springframework.org/schema/beans/spring-beans.xsd
+	 http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd">
+	<context:component-scan base-package="com.dao">
+	</context:component-scan>
+	<!-- 配置数据库相关- -->
+	<bean id="dataSource"
+		class="org.apache.commons.dbcp.BasicDataSource">
+		<property name="driverClassName"
+			value="com.microsoft.sqlserver.jdbc.SQLServerDriver"></property>
+		<property name="url"
+			value="jdbc:sqlserver://127.0.0.1:1433;DatabaseName=test"></property>
+		<property name="username" value="sa"></property>
+		<property name="password" value="123456"></property>
+		<!--  <property name="maxActive" value="10"></property>
+		<property name="maxIdle" value="6"></property>-->
+
+	</bean>
+	<!-- 配置txManager -->
+	<bean id="txManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+	<!-- 增加对事务的支持 -->
+	<tx:annotation-driven
+		transaction-manager="txManager" />
+
+
+	<bean id="helloWord" class="com.demo.Hello"></bean>
+
+
+	<bean name="student" class="com.demo.Student">
+		<property name="stuno" value="003" />
+		<property name="stuname" value="曹宁" />
+	</bean>
+	<bean name="studentMaker" class="com.demo.StudentMaker">
+		<property name="student" ref="student" />
+	</bean>
+	<bean id="teacher" class="com.demo.Teacher">
+		<!-- 通过set方式复制<property name="name" value="zs"></property> <property name="age" 
+			value="23"></property> -->
+		<!-- 通过构造器方式复制 -->
+		<constructor-arg value="ls"></constructor-arg>
+		<constructor-arg value="24"></constructor-arg>
+
+	</bean>
+	<bean id="course" class="com.demo.Course">
+		<!-- 通过set方式复制<property name="courseName" value="java"></property> <property 
+			name="courseHour" value="200"></property> <property name="teacher" ref="teacher"></property> -->
+		<!-- 通过构造器方式赋值 -->
+		<constructor-arg value="C"></constructor-arg>
+		<constructor-arg value="100"></constructor-arg>
+
+		<constructor-arg ref="teacher"></constructor-arg>
+
+	</bean>
+	<bean id="collectionDemo" class="com.demo.AllCollectionTYpe">
+
+		<!-- 通过set<property name="list1"> <list> <value>足球</value> <value>篮球</value> 
+			<value>乒乓球</value> </list></property> -->
+		<!-- 通过构造器其他类似 -->
+
+		<constructor-arg name="list1">
+			<list>
+				<value>足球11111</value>
+				<value>篮球111111111</value>
+				<value>乒乓球1111111</value>
+
+			</list>
+
+		</constructor-arg>
+
+
+		<property name="array1">
+			<array>
+				<value>足球1</value>
+				<value>篮球1</value>
+				<value>乒乓球1</value>
+			</array>
+		</property>
+		<property name="set1">
+			<set>
+				<value>足球2</value>
+				<value>篮球2</value>
+				<value>乒乓球2</value>
+			</set>
+		</property>
+		<property name="map1">
+			<map>
+				<entry>
+					<key>
+						<value>foot</value>
+					</key>
+					<value>足球3</value>
+				</entry>
+				<entry>
+					<key>
+						<value>basketball</value>
+					</key>
+					<value>篮球3</value>
+				</entry>
+				<entry>
+					<key>
+						<value>pingpang</value>
+					</key>
+					<value>乒乓球3</value>
+				</entry>
+
+
+			</map>
+		</property>
+		<property name="props1">
+			<props>
+				<prop key="foot4">足球4</prop>
+				<prop key="basket">篮球4</prop>
+				<prop key="ping">乒乓球4</prop>
+
+			</props>
+		</property>
+
+	</bean>
+	<!-- 基本的，也可以注解 <bean id="studentDao" class="com.dao.impl.StudentDaoImpl"></bean> -->
+	<bean id="studentDao" class="com.dao.impl.StudentDaoImpl"></bean>
+
+	<!-- 配置前置通知 -->
+	<bean id="studentService" class="com.service.StudentServiceImpl">
+		<property name="studentDao" ref="studentDao"></property>
+
+	</bean>
+	<bean id="logBefore" class="com.aop.LogBefore"></bean>
+<aop:config>
+		<aop:pointcut expression="execution(public void com.service.StudentServiceImpl.deleteStudentByNo(String)) or execution(public void com.service.StudentServiceImpl.addStudent(com.demo.Student))"
+		    id="pointcut"/>
+		<aop:advisor advice-ref="logBefore"
+			pointcut-ref="pointcut"/>
+</aop:config>
+	<bean id="after" class="com.aop.LogAfter"></bean>
+	<aop:config>
+		<aop:pointcut
+			expression="execution(public void com.service.StudentServiceImpl.addStudent(com.demo.Student))"
+			id="pointcut2" />
+		<aop:advisor advice-ref="after" pointcut-ref="pointcut2" />
+
+
+	</aop:config>
+	<bean id="logex" class="com.aop.LogException"></bean>
+	<aop:config>
+		<aop:pointcut
+			expression="execution(public void com.service.StudentServiceImpl.addStudent(com.demo.Student))"
+			id="pointcut3" />
+		<aop:advisor advice-ref="logex" pointcut-ref="pointcut3" />
+
+
+	</aop:config>
+	<bean id="logaround" class="com.aop.LogAround"></bean>
+	<aop:config>
+		<aop:pointcut
+			expression="execution(public void com.service.StudentServiceImpl.addStudent(com.demo.Student))"
+			id="pointcut4" />
+		<aop:advisor advice-ref="logaround"
+			pointcut-ref="pointcut4" />
+
+
+	</aop:config>
+	<!-- 开启注解对aop的支持 -->
+	<aop:aspectj-autoproxy>
+	</aop:aspectj-autoproxy>
+	<context:component-scan base-package="package com.aop"></context:component-scan>
+	<!-- schema注解方式 -->
+<bean id="logSchema" class="com.aop.LogSchema"></bean>
+<aop:config>
+		<aop:pointcut
+			expression="execution(public void com.service.StudentServiceImpl.addStudent(com.demo.Student))"
+			id="pcSchema" />
+		<!--  <aop:advisor advice-ref="logSchea" pointcut-ref="pcSchema" />-->
+		
+<aop:aspect ref="logSchema">
+<aop:before method="before" pointcut-ref="pcSchema"/>
+<aop:after-returning method="afterReturning" pointcut-ref="pcSchema"/>
+<aop:after-throwing method="whenException" pointcut-ref="pcSchema"    throwing="e"/>
+<aop:around method="around" pointcut-ref="pcSchema"   />
+
+</aop:aspect>
+</aop:config>
+	
+</beans>
